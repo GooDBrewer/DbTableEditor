@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Xml.Linq;
 using Npgsql;
+using DbTableEditor.Services;
+using DbTableEditor.Repositories;
 
 
 namespace DbTableEditor
@@ -43,6 +45,8 @@ namespace DbTableEditor
             services.AddTransient<MainForm>(); 
             services.AddTransient<CreateTableForm>();
             services.AddTransient<UpdateForm>();
+            services.AddTransient<AddColumnForm>();
+
         }
     }
 }

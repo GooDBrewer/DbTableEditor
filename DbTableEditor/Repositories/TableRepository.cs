@@ -1,4 +1,6 @@
-﻿using Npgsql;
+﻿using DbTableEditor;
+using DbTableEditor.Models;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +12,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
-namespace DbTableEditor
+namespace DbTableEditor.Repositories
 {
     public class TableRepository : ITableRepository
     {
@@ -140,51 +142,7 @@ namespace DbTableEditor
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.ExecuteNonQuery();
         }
-        public void DropConstraint(string tableName, string pkName)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            conn.Open();
-
-            string sql = $"ALTER TABLE {tableName} DROP CONSTRAINT {pkName};";
-
-            using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.ExecuteNonQuery();
-        }
-        public void AddConstraint(string tableName, string columnName)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            conn.Open();
-
-            string sql = $"ALTER TABLE {tableName} ADD CONSTRAINT {tableName}_new_pkey PRIMARY KEY ({columnName});";
-
-            using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.ExecuteNonQuery();
-        }
-        public string GetConstraint(string tableName)
-        {
-            string pkName = null;
-
-            using var conn = new NpgsqlConnection(_connectionString);
-            conn.Open();
-
-            string sql = @"
-                SELECT conname
-                FROM pg_constraint
-                WHERE conrelid = @table::regclass
-                AND contype = 'p';";
-
-            using (var cmd = new NpgsqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@table", tableName);
-
-                var result = cmd.ExecuteScalar();
-                if (result != null && result != DBNull.Value)
-                {
-                    pkName = result.ToString();
-                }
-            }
-            return pkName;
-        }
+        
         public List<string> GetAllTables()
         {
             using var conn = new NpgsqlConnection(_connectionString);

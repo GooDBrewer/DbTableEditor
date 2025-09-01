@@ -1,12 +1,15 @@
-﻿using Npgsql;
+﻿using DbTableEditor.Models;
+using DbTableEditor.Repositories;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace DbTableEditor
+namespace DbTableEditor.Services
 {
     public class TableService : ITableService
     {
@@ -66,7 +69,7 @@ namespace DbTableEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка: " +  ex.Message);
+                MessageBox.Show("Ошибка переименования таблицы: " +  ex.Message);
             }
         }
 
@@ -78,7 +81,7 @@ namespace DbTableEditor
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Ошибка: " + ex.Message);
+                MessageBox.Show("Ошибка переименования поля: " + ex.Message);
             }
         }
 
@@ -90,28 +93,31 @@ namespace DbTableEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка: " + ex.Message);
+                MessageBox.Show("Ошибка изменения типа данных поля: " + ex.Message);
             }
         }
         public void AddColumn(string tableName, string columnName, string columnType)
         {
-            
+            try
+            {
+                _repository.AddColumn(tableName, columnName, columnType);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка добавления поля: " + ex.Message);
+            }
         }
         public void RemoveColumn(string tableName, string columnName)
         {
+            try
+            {
+                _repository.RemoveColumn(tableName, columnName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка удаления поля поля: " + ex.Message);
+            }
         }
-        public void DropConstraint(string tableName, string pkName)
-        {
-            
-        }
-        public void AddConstraint(string tableName, string columnName)
-        {
-        }
-        public string GetConstraint(string tableName)
-        {
-            return "aboba";
-        }
-
 
 
         public List<string> GetAllTables()          => _repository.GetAllTables();

@@ -127,6 +127,7 @@
             comboColumnType.Name = "comboColumnType";
             comboColumnType.Size = new Size(175, 23);
             comboColumnType.TabIndex = 6;
+
             // 
             // label2
             // 

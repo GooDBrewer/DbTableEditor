@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using Npgsql;
 using Microsoft.Extensions.DependencyInjection;
+using DbTableEditor.Services;
 
 
 

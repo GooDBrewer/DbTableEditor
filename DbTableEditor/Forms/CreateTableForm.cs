@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DbTableEditor.Models;
+using DbTableEditor.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -32,16 +34,7 @@ namespace DbTableEditor
 
         private void CreateTableForm_Load(object sender, EventArgs e)
         {
-            comboColumnType.Items.AddRange(new string[]{    "INT",
-                                                            "SERIAL",
-                                                            "VARCHAR(50)",
-                                                            "VARCHAR(100)",
-                                                            "TEXT",
-                                                            "DATE",
-                                                            "TIMESTAMP",
-                                                            "BOOLEAN",
-                                                            "NUMERIC"
-                                                       });
+            comboColumnType.Items.AddRange(DatabaseConfig.ColumnTypes);
             comboColumnType.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
@@ -69,7 +62,7 @@ namespace DbTableEditor
         {
             _primaryKey = txtPrimaryKey.Text.Trim() ;
         }
-        private void createTable_Click(object sender, EventArgs e)
+        private void createTable_Click(object sender, EventArgs e)//создаем запрос на создание таблицы и закрываем форму
         {
             if (string.IsNullOrWhiteSpace(_tableName))
             {

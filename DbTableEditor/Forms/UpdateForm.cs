@@ -8,20 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
+using Microsoft.Extensions.DependencyInjection;
+using DbTableEditor.Services;
 
 namespace DbTableEditor
 {
     public partial class UpdateForm : Form
     {
 
+        private readonly IServiceProvider _provider;
         private readonly ITableService _tableService;
         private string _tableName;
         private string _primaryKey;
 
-        public UpdateForm(ITableService tableService)
+        public UpdateForm(ITableService tableService, IServiceProvider provider)
         {
             InitializeComponent();
             _tableService = tableService;
+            _provider = provider;
             lableTab.Text = "Таблица: " + _tableName;
         }
         public void InitializeTableName(string tableName)
@@ -73,10 +77,7 @@ namespace DbTableEditor
             try
             {
 
-                var cell = dataGridView1.SelectedCells[0];
-                int colIndex = cell.ColumnIndex;
-
-                string oldColumnName = dataGridView1.Columns[colIndex].HeaderText;
+                var oldColumnName = GetSelectedColName(dataGridView1);
                 var newColumnName = Interaction.InputBox("Введите новое название поля: ",
                 "Изменение названия",
                 "");
@@ -102,10 +103,7 @@ namespace DbTableEditor
         {
             try
             {
-                var cell = dataGridView1.SelectedCells[0];
-                int colIndex = cell.ColumnIndex;
-
-                var colName = dataGridView1.Columns[colIndex].HeaderText;
+                var colName = GetSelectedColName(dataGridView1);
                 var newType = comBoxType.Text.Trim();
 
                 _tableService.ChangeColumnType(_tableName, colName, newType);
@@ -119,12 +117,40 @@ namespace DbTableEditor
 
         private void dltColumn_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                var colName = GetSelectedColName(dataGridView1);
+                _tableService.RemoveColumn(_tableName, colName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex);
+            }
         }
 
         private void AddColumn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                var addColForm = _provider.GetRequiredService<AddColumnForm>();
+                addColForm.InitializeTableName(_tableName);
+                addColForm.ShowDialog();
+                if (addColForm.ShowDialog() == DialogResult.OK)
+                {
+                    dataGridView1.DataSource = _tableService.ReadTable(_tableName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex);
+            }
+        }
+        private string GetSelectedColName(DataGridView select)
+        {
+            var cell = select.SelectedCells[0];
+            int colIndex = cell.ColumnIndex;
 
+            return dataGridView1.Columns[colIndex].HeaderText;
         }
     }
 }
